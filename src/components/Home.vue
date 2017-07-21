@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<transition name="slideDown">
-			<create id="create" v-if="createModal"></create>	
+			<create :user="user" id="create" v-if="createModal"></create>	
 		</transition>
 		
 		<section class="home">
