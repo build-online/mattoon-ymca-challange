@@ -28,7 +28,7 @@
 		</form>
 		<div class="submitButton">
 			<p>*1 lap equals 50 yards or one time down and back.</p>
-			<button type="submit" @click="create">Submit Workout</button>
+			<button type="submit" @click="create" :disabled="loading">Submit Workout</button>
 		</div>
 	</section>
 </template>
@@ -45,7 +45,8 @@
 				swim: 0,
 				bike: 0,
 				run: 0,
-				base: null
+				base: null,
+				loading: false,
 			}
 		},
 		mounted: function(){
@@ -70,6 +71,8 @@
 				var participants = [];
 				participants.push(self.user.id);
 
+				self.loading = true;
+
 				this.base('Workouts').create({
 			        "Date": moment().format('YYYY-MM-DD'),
 			        "Laps": self.swim,
@@ -80,9 +83,11 @@
 			        if (err) { 
 			        	console.log(err); 
 			        	alert("Unable to cretae new record;")
+			        	self.loading = false;
 			        	return;
 		        	}
 		        	alert("New Workout Record Created.")
+		        	self.loading = false;
 			        Bus.$emit('closeCreateWorkoutRecord');
 			    });
 			}
