@@ -86,8 +86,9 @@
 			        	self.loading = false;
 			        	return;
 		        	}
-		        	alert("New Workout Record Created.")
+		        	alert("New Workout Record Created.")		        	
 		        	self.loading = false;
+		        	Bus.$emit('updateHomeData');
 			        Bus.$emit('closeCreateWorkoutRecord');
 			    });
 			}

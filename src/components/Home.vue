@@ -13,7 +13,7 @@
 				<br>
 				<cite>{{ randomQuote['Source'] }}</cite>
 			</blockquote>
-			<div class="overallProgress">
+			<div class="overallProgress" v-if="homeInfo">
 				<h2>Overall Progress</h2>
 				<div class="bars">
 					<div class="swim bar-section">
@@ -32,10 +32,10 @@
 
 						-->
 						<div class="bar">
-							<div class="bar-inner" style="width: 7%;"></div>
+							<div class="bar-inner" :style="{width: swimPercentage+'%'}"></div>
 						</div><!--/bar-->
 						<div class="progressNumbers">
-							<p>300 yd</p>
+							<p>{{ homeInfo.fields['Swim Total'] }} yd</p>
 							<hr>
 							<p>4224 yd</p>
 						</div>
@@ -43,10 +43,10 @@
 					<div class="bike bar-section">
 						<img src="http://d33wubrfki0l68.cloudfront.net/b0eedc1c5349c820385839ced53bf87de9233b49/229ee/assets/images/bike.png" alt="" >
 						<div class="bar">
-							<div class="bar-inner" style="width: 14%;"></div>
+							<div class="bar-inner" :style="{width: bikePercentage+'%'}"></div>
 						</div><!--/bar-->
 						<div class="progressNumbers">
-							<p>17 mi</p>
+							<p>{{ homeInfo.fields['Bike Total'] }} mi</p>
 							<hr>
 							<p>112 mi</p>
 						</div>
@@ -54,17 +54,17 @@
 					<div class="run bar-section">
 						<img src="http://d33wubrfki0l68.cloudfront.net/20ecc20d03974d782d76e044a3881c26c57c9123/19adb/assets/images/run.png" alt="" >
 						<div class="bar">
-							<div class="bar-inner" style="width: 23%;"></div>
+							<div class="bar-inner" :style="{width: runPercentage+'%'}"></div>
 						</div><!--/bar-->
 						<div class="progressNumbers">
-							<p>6 mi</p>
+							<p>{{ homeInfo.fields['Run Total'] }} mi</p>
 							<hr>
 							<p>26.2 mi</p>
 						</div>
 					</div><!--/run-->
 				</div><!--/bars-->
 			</div><!--/overallProgress-->
-			<div class="weeklyProgress">
+			<div class="weeklyProgress" v-if="homeInfo">
 				<h2>This Week</h2>
 			<!--
 				Week Explanation
@@ -75,15 +75,15 @@
 
 				<div class="weeklyNumbers">
 					<div class="swim">
-						<p>300 yd</p>
+						<p>{{ homeInfo.fields['Week Swim'] }} yd</p>
 						<img src="http://d33wubrfki0l68.cloudfront.net/3a825d79e59a3f2849198c2d843ac9110e93877f/6141c/assets/images/swim.png" alt="">
 					</div>
 					<div class="bike">
-						<p>17 mi</p>
+						<p>{{ homeInfo.fields['Week Bike'] }} mi</p>
 						<img src="http://d33wubrfki0l68.cloudfront.net/b0eedc1c5349c820385839ced53bf87de9233b49/229ee/assets/images/bike.png" alt="">
 					</div>
 					<div class="run">
-						<p>6 mi</p>
+						<p>{{ homeInfo.fields['Week Run'] }} mi</p>
 						<img src="http://d33wubrfki0l68.cloudfront.net/20ecc20d03974d782d76e044a3881c26c57c9123/19adb/assets/images/run.png" alt="">
 					</div>
 				</div><!--/weeklyNumbers-->
@@ -112,6 +112,7 @@
 			return{
 				user: null,
 				base: null,
+				homeInfo: null,
 				quotes: [],
 				loading: false,
 				createModal: false
@@ -122,6 +123,7 @@
 			Bus.$on('closeCreateWorkoutRecord',function(){
 				self.createModal = false;
 			})
+			Bus.$on('updateHomeData',this.getHomeData);
 		},
 		mounted(){
 			this.user = JSON.parse(Auth.userLoggedIn())
@@ -130,6 +132,7 @@
     		Airtable.configure({ apiKey: AIRTABLE_APP_KEY });
     		this.base = Airtable.base(AIRTABLE_APP_ID);
 
+    		this.getHomeData();
     		this.getQuotes();
 		},
 		computed:{
@@ -141,7 +144,34 @@
 				}
 
 				return null;
-			}
+			},
+			swimPercentage: function(){
+				if(this.homeInfo){
+					if(this.homeInfo.fields['Swim Percentage'] > 100)
+						return 100;
+					else 
+						return this.homeInfo.fields['Swim Percentage'];
+				}
+				return 0;
+			},
+			bikePercentage: function(){
+				if(this.homeInfo){
+					if(this.homeInfo.fields['Bike Percentage'] > 100)
+						return 100;
+					else 
+						return this.homeInfo.fields['Bike Percentage'];
+				}
+				return 0;
+			},
+			runPercentage: function(){
+				if(this.homeInfo){
+					if(this.homeInfo.fields['Run Percentage'] > 100)
+						return 100;
+					else 
+						return this.homeInfo.fields['Run Percentage'];
+				}
+				return 0;
+			},
 		},
 		methods: {
 
@@ -159,6 +189,10 @@
 					fetchNextPage();
 				});
 			},
+
+			/* 
+			 * Function to shuffle quotes items
+			*/
 			shuffle(array) {
 				var currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -175,6 +209,24 @@
 				}	
 
 				return array;
+			},
+
+			/* 
+			 * Home data
+			*/
+			getHomeData: function(){
+				var self = this;
+      
+				var args = {
+					view: 'Grid view',
+					fields: ['Name','First Name','Last Name','Phone','email','Notes','Swim Total','Bike Total','Run Total','Swim Percentage','Bike Percentage','Run Percentage','Week Swim','Week Bike','Week Run'],
+					filterByFormula: "RECORD_ID() = '"+self.user.id+"'",
+				};
+				this.base('Participants').select(args).eachPage(function page(records, fetchNextPage) {
+					if(records.length > 0){
+						self.homeInfo = records[0]._rawJson;
+					}
+				});
 			}
 		}
 	}
