@@ -1,6 +1,6 @@
 {
-  "name": "ymca-project",
-  "short_name": "ymca-project",
+  "name": "Mattoon YMCA Challenges",
+  "short_name": "Mattoon YMCA Challenges",
   "icons": [
     {
       "src": "/static/img/icons/android-chrome-192x192.png",
