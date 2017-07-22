@@ -7,12 +7,10 @@
     </p>
     <h2>Sign In</h2>
     <form @submit.prevent="signIn">
+      
       <!--Replace this with a material component.  Pull names from Airtable Participants-->
       <label >Name
-      <select name="choose_name" id="choose_name" v-model="participant">
-        <option value="">Select Participant</option>
-        <option :value="participant.getId()" v-for="participant in participants">{{ participant.get("Name") }}</option>
-      </select>
+      <v-select :debounce="250" :on-search="getParticipants" v-model="participant" :options="participants" placeholder="Select Participant"></v-select>
       </label>
       <label>
         4 Digit Pin
@@ -32,11 +30,13 @@ import { AIRTABLE_APP_ID,AIRTABLE_APP_KEY } from '../config'
 import Auth from '../Auth'
 import VueRouter from 'vue-router'
 import Topbar from './common/Topbar'
+import vSelect from "vue-select"
 
 export default {
   name: 'login',
   components:{
-    'topbar': Topbar
+    'topbar': Topbar,
+    vSelect
   },
   created: function(){
   },
@@ -51,7 +51,7 @@ export default {
     Airtable.configure({ apiKey: AIRTABLE_APP_KEY });
     this.base = Airtable.base(AIRTABLE_APP_ID);    
 
-    this.getParticipants();
+    // this.getParticipants();
   },
   data () {
     return {
@@ -66,13 +66,13 @@ export default {
     signIn: function(){
       var self = this;
       // Validate
-      if(this.participant == "" || this.pin == ""){
+      if(this.participant == "" || this.participant == null || this.pin == ""){
         alert("Participant field and Pin Field can not be empty")
         return false;
       }
 
       this.loading = true;
-      Auth.login(this.participant,this.pin).then(function(response){        
+      Auth.login(this.participant.value,this.pin).then(function(response){        
         if(response == true){
           const router = new VueRouter();
           router.push('/home');
@@ -87,18 +87,26 @@ export default {
       })
       
     },
-    getParticipants: function(){
+    getParticipants: function(search,loading){
       var self = this;
+      loading(true)
       
       var args = {
         view: 'Grid view',
-        fields: ['Name','First Name','Last Name']
+        fields: ['Name','First Name','Last Name'],
+        filterByFormula: "SEARCH(LOWER(TRIM('"+search+"')),LOWER(TRIM({Name})))",
       };
       this.base('Participants').select(args).eachPage(function page(records, fetchNextPage) {        
+        self.participants = []
         records.forEach(function(item,key){
-          self.participants.push(item);
+          self.participants.push({            
+            label: item.fields['Name'],
+            value: item.id
+          });          
         });
-        fetchNextPage();
+        loading(false)
+      },function(err){
+        loading(false)
       });
     }
   }
