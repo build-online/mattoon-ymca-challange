@@ -3,6 +3,10 @@
 		<transition name="slideDown">
 			<create :user="user" id="create" v-if="createModal"></create>	
 		</transition>
+
+		<transition name="slideDown">
+			<encouragement-modal v-if="encouragementModal"></encouragement-modal>
+		</transition>		
 		
 		<section class="home">
 			<topbar></topbar>
@@ -98,15 +102,18 @@
 	import Airtable from 'airtable'
 	import { AIRTABLE_APP_ID,AIRTABLE_APP_KEY } from '../config'
 	import Auth from '../Auth'
+	import Encouragement from '../Encouragement'
 	import VueRouter from 'vue-router'
 	import Topbar from './common/Topbar'
 	import Create from './Create'
+	import EncouragementModal from './EncouragementModal'
 
 	export default{
 		name: 'home',
 		components:{
 			'topbar': Topbar,
-			'create': Create
+			'create': Create,
+			'encouragement-modal': EncouragementModal
 		},
 		data: function(){
 			return{
@@ -115,7 +122,9 @@
 				homeInfo: null,
 				quotes: [],
 				loading: false,
-				createModal: false
+				createModal: false,
+				encouragementModal: false,
+				encouragement: null
 			}
 		},
 		created: function(){
@@ -124,16 +133,32 @@
 				self.createModal = false;
 			})
 			Bus.$on('updateHomeData',this.getHomeData);
-		},
-		mounted(){
+
+			Bus.$on('closeEncouragementModal',function(){
+				self.encouragementModal = false;
+			})
+
+			// Load User data
 			this.user = JSON.parse(Auth.userLoggedIn())
 
+			// Load encouragement data
+			Encouragement.loadEncouragement(this.user.id).then(function(data){
+				self.encouragement = data;
+			}).catch(function(err){
+				console.log(err)	
+			});
+		},
+		mounted(){
 			// Configure Airtable
     		Airtable.configure({ apiKey: AIRTABLE_APP_KEY });
     		this.base = Airtable.base(AIRTABLE_APP_ID);
 
     		this.getHomeData();
-    		this.getQuotes();
+    		this.getQuotes();   
+
+			// Check for encouragement modal every 2 mins
+    		// setTimeout(this.checkEncouragement(), 120000);
+    		this.checkEncouragement();    		
 		},
 		computed:{
 			randomQuote: function(){
@@ -227,6 +252,30 @@
 						self.homeInfo = records[0]._rawJson;
 					}
 				});
+			},
+
+			/* 
+			 * Check to show encouragement modal or not
+			*/
+			checkEncouragement: function(){
+				this.encouragement = Encouragement.getEncouragement();
+
+				// Check only if user is not encouraged
+				if(this.encouragement.encouraged != true){
+
+					// Show dialog only if user is not encouraged and done 50% of work
+					if(this.encouragement.percentage >= 50){
+						// Show modal here
+						this.encouragementModal = true;
+
+						Encouragement.updateUserEncouragement(this.user.id);
+					}else{
+						Encouragement.loadEncouragement(this.user.id);
+					}
+
+					// Check every 10 seconds untill user is not encouraged
+					setTimeout(this.checkEncouragement, 10000);
+				}				
 			}
 		}
 	}
