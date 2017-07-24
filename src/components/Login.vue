@@ -15,7 +15,7 @@
       <label>
         4 Digit Pin
         <!--Again replace this with a material style component.  The pin number needs to match the pin number of the selected name.  I'm using a number input here because it will always be a four digit number and the numerical keyboard on a phone is easier to use.-->
-        <input type="number" v-model="pin">
+        <input type="number" v-model="pin" id="pin">
       </label>
     </form>
     <div class="submitButton">
@@ -37,6 +37,12 @@ export default {
   components:{
     'topbar': Topbar,
     vSelect
+  },
+  watch: {
+    participant: function(val, oldVal) {
+      // Focus to pin when participant is selected
+      document.getElementById('pin').focus();
+    }
   },
   created: function(){
   },
