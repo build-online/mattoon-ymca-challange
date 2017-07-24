@@ -3,7 +3,7 @@
     <topbar></topbar>
     <img src="/static/images/welcome.png" alt="" class="welcomeImage">
     <p class="welcomeMessage">
-      To Sign Up and receive your pin visit the Front Desk or call 217-235-9622
+      To sign up and receive your pin visit the Front Desk or call 217-234-9494
     </p>
     <h2>Sign In</h2>
     <form @submit.prevent="signIn">
