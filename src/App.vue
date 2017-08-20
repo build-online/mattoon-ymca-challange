@@ -9,8 +9,10 @@
 
 <script>
 require('vue2-animate/dist/vue2-animate.min.css')
+import {YMCAMixin} from '@/components/mixins/Ymca'
 export default {
   name: 'app',
+  mixins: [YMCAMixin]
 }
 </script>
 

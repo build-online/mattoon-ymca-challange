@@ -98,18 +98,20 @@
 		</section>
 	</div>
 </template>
-<script type="text/javascript">
+<script>
 	import Airtable from 'airtable'
-	import { AIRTABLE_APP_ID,AIRTABLE_APP_KEY } from '../config'
-	import Auth from '../Auth'
-	import Encouragement from '../Encouragement'
+	import { AIRTABLE_APP_ID,AIRTABLE_APP_KEY } from '../../config'
+	import Auth from '../../Auth'
+	import Encouragement from '../../Encouragement'
 	import VueRouter from 'vue-router'
 	import Topbar from './common/Topbar'
 	import Create from './Create'
 	import EncouragementModal from './EncouragementModal'
+	import { IronmanMixin } from './mixins'
 
-	export default{
+	export default {
 		name: 'home',
+		mixins: [IronmanMixin],
 		components:{
 			'topbar': Topbar,
 			'create': Create,

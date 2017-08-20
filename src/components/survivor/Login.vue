@@ -1,9 +1,9 @@
 <template>
   <section class="login">
     <topbar></topbar>
-    <img src="/static/images/welcome.png" alt="" class="welcomeImage">
+    <img :src="imageURL" alt="" class="welcomeImage">
     <p class="welcomeMessage">
-      To sign up and receive your pin visit the Front Desk or call 217-234-9494
+      {{content}}
     </p>
     <h2>Sign In</h2>
     <form @submit.prevent="signIn">
@@ -26,14 +26,16 @@
 
 <script>
 import Airtable from 'airtable'
-import { AIRTABLE_APP_ID,AIRTABLE_APP_KEY } from '../config'
-import Auth from '../Auth'
+import { AIRTABLE_APP_ID,AIRTABLE_APP_KEY } from '../../config'
+import SurvivorAuth from '../../SurvivorAuth'
 import VueRouter from 'vue-router'
 import Topbar from './common/Topbar'
 import vSelect from "vue-select"
+import { SurvivorMixin } from './mixins'
 
 export default {
-  name: 'login',
+  name: 'SurvivorLogin',
+  mixins: [SurvivorMixin],
   components:{
     'topbar': Topbar,
     vSelect
@@ -46,11 +48,11 @@ export default {
   },
   created: function(){
   },
-  mounted: function(){
+  mounted: function(){    
     // If user is loggedin then redirect it to home page
-    if(Auth.userLoggedIn()){
+    if(SurvivorAuth.userLoggedIn()){
       const router = new VueRouter();
-      router.push('/home');
+      router.push('/survivor/home');
     }
     
     // Configure Airtable
@@ -58,6 +60,21 @@ export default {
     this.base = Airtable.base(AIRTABLE_APP_ID);    
 
     // this.getParticipants();
+    this.getInfo();
+  },
+  computed:{
+      imageURL: function(){
+          if(this.info != null && this.info['fields']['Image'][0]['url']){
+              return this.info['fields']['Image'][0]['url'];
+          }
+          return "";
+      },
+      content: function(){
+          if(this.info != null && this.info['fields']['Text']){
+              return this.info['fields']['Text'];
+          }
+          return "";
+      }
   },
   data () {
     return {
@@ -65,10 +82,16 @@ export default {
       participant: "",
       pin: "",
       base: null,
-      loading: false
+      loading: false,
+      info: null
     }
   },
   methods: {
+    getInfo: function(){
+      var currentApp = localStorage.getItem('currentApp')
+      currentApp = JSON.parse(currentApp)
+      this.info = currentApp;
+    },
     signIn: function(){
       var self = this;
       // Validate
@@ -78,10 +101,11 @@ export default {
       }
 
       this.loading = true;
-      Auth.login(this.participant.value,this.pin).then(function(response){        
+      SurvivorAuth.login(this.participant.value,this.pin).then(function(response){        
+        console.log(response)
         if(response == true){
           const router = new VueRouter();
-          router.push('/home');
+          router.push('/survivor/home');
         }else{
           alert("Unable to login");
         }
@@ -102,7 +126,7 @@ export default {
         fields: ['Name','First Name','Last Name'],
         filterByFormula: "SEARCH(LOWER(TRIM('"+search+"')),LOWER(TRIM({Name})))",
       };
-      this.base('Participants').select(args).eachPage(function page(records, fetchNextPage) {        
+      this.base('Survivor Participants').select(args).eachPage(function page(records, fetchNextPage) {        
         self.participants = []
         records.forEach(function(item,key){
           self.participants.push({            

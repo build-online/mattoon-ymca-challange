@@ -50,7 +50,7 @@ export default{
 		var user = localStorage.getItem("user");
 		user = JSON.parse(user);
 
-		if(user['encouragement']){
+		if(user['encouragement'] != null){
 			return user['encouragement'];
 		}else{
 			return encouragement;

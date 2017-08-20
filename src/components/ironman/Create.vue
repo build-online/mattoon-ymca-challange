@@ -35,11 +35,13 @@
 <script type="text/javascript">
 	import moment from 'moment'
 	import Airtable from 'airtable'
-	import { AIRTABLE_APP_ID,AIRTABLE_APP_KEY } from '../config'
+	import { AIRTABLE_APP_ID,AIRTABLE_APP_KEY } from '../../config'
+	import { IronmanMixin } from './mixins'
 
-	export default{
+	export default {
 		name: 'create',
 		props: ['user'],
+		mixins: [IronmanMixin],
 		data: function(){
 			return {
 				swim: 0,

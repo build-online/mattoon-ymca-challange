@@ -5,10 +5,10 @@
     </div><!--/topbar-->        
 </template>
 <script type="text/javascript">
-	import Auth from '../../Auth'
+	import Auth from '../../../Auth'
 	import VueRouter from 'vue-router'
 	export default{
-		name: 'topbar',
+		name: 'SurvivorTopbar',
 		methods:{
 			logout: function(){
 
@@ -32,6 +32,9 @@
 	}
 </script>
 <style type="text/css" lang="scss">
+    .topbar{
+        background: transparent;
+    }
 	.logout{
 	    color: #D85C36;
 		font-weight: bold;
