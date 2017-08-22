@@ -4,7 +4,7 @@
     <img :src="imageURL" alt="" class="welcomeImage">
     <p class="welcomeMessage">
       {{content}}
-    </p>
+    </p>    
     <h2>Sign In</h2>
     <form @submit.prevent="signIn">
       
@@ -20,7 +20,7 @@
     </form>
     <div class="submitButton">
       <button type="button" @click="signIn" :disabled="loading">Sign In</button>
-    </div>
+    </div>    
   </section>
 </template>
 
@@ -61,6 +61,10 @@ export default {
 
     // this.getParticipants();
     this.getInfo();
+
+    const self = this
+    this.getLocation();
+
   },
   computed:{
       imageURL: function(){
@@ -83,7 +87,8 @@ export default {
       pin: "",
       base: null,
       loading: false,
-      info: null
+      info: null,      
+      location: null
     }
   },
   methods: {
@@ -138,7 +143,9 @@ export default {
       },function(err){
         loading(false)
       });
-    }
+    },
+
+
   }
 }
 </script>

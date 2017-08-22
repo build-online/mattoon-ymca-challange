@@ -1,9 +1,9 @@
 <template>
   <section class="login">
     <topbar></topbar>
-    <img src="/static/images/welcome.png" alt="" class="welcomeImage">
+    <img :src="imageURL" alt="" class="welcomeImage">
     <p class="welcomeMessage">
-      To sign up and receive your pin visit the Front Desk or call 217-234-9494
+      {{content}}
     </p>
     <h2>Sign In</h2>
     <form @submit.prevent="signIn">
@@ -60,6 +60,21 @@ export default {
     this.base = Airtable.base(AIRTABLE_APP_ID);    
 
     // this.getParticipants();
+    this.getInfo();
+  },
+  computed:{
+      imageURL: function(){
+          if(this.info != null && this.info['fields']['Image'][0]['url']){
+              return this.info['fields']['Image'][0]['url'];
+          }
+          return "";
+      },
+      content: function(){
+          if(this.info != null && this.info['fields']['Text']){
+              return this.info['fields']['Text'];
+          }
+          return "";
+      }
   },
   data () {
     return {
@@ -67,10 +82,16 @@ export default {
       participant: "",
       pin: "",
       base: null,
-      loading: false
+      loading: false,
+      info: null
     }
   },
   methods: {
+    getInfo: function(){
+      var currentApp = localStorage.getItem('currentApp')
+      currentApp = JSON.parse(currentApp)
+      this.info = currentApp;
+    },
     signIn: function(){
       var self = this;
       // Validate

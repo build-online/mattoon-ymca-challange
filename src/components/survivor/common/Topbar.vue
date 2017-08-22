@@ -5,7 +5,7 @@
     </div><!--/topbar-->        
 </template>
 <script type="text/javascript">
-	import Auth from '../../../Auth'
+	import Auth from '../../../SurvivorAuth'
 	import VueRouter from 'vue-router'
 	export default{
 		name: 'SurvivorTopbar',
