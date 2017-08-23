@@ -39,6 +39,8 @@ export default {
 
 	logout(){
 		localStorage.removeItem("survivorUser");
+		localStorage.removeItem("survivorWorkout");
+		localStorage.removeItem("survivorLocation");
 	}
 
 };

@@ -1,6 +1,6 @@
 <template>
 	<div class="topbar">
-      <h1 class="logo"> <img src="/static/images/Logo.png" alt="" height="33px"></h1>
+      <h1 class="logo"><img src="/static/images/logo-white.png" alt="" height="33px"></h1>
       <a v-if="isUserLoggedIn" href="javascript:void(0)" class="logout" @click="logout">Logout</a>
     </div><!--/topbar-->        
 </template>
@@ -31,12 +31,13 @@
 		}
 	}
 </script>
-<style type="text/css" lang="scss">
+<style type="text/css" lang="scss" scoped>
     .topbar{
-        background: transparent;
+        background: black;
+		margin: 0;
     }
 	.logout{
-	    color: #D85C36;
+	    color: white;
 		font-weight: bold;
 		text-decoration: none;
 

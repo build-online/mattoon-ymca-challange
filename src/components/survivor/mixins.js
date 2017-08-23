@@ -6,7 +6,8 @@ export const SurvivorMixin = {
     },
     mounted: function(){
         const self = this
-        // Update location every 
+        
+        // Update location every minute
         setInterval(function() {
             self.updateLocation()
         }, 10 * 1000);    
@@ -29,29 +30,15 @@ export const SurvivorMixin = {
         },
         getLocation() {
             const self = this
-            if(navigator.geolocation){
-                navigator.geolocation.getCurrentPosition(position => {
-                    self.location = {
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude
-                    }
-                    localStorage.setItem('survivorLocation',JSON.stringify(self.location))
-                },error => {
-                    self.location = error
-                });
-            }
-            /*const self = this
             localStorage.setItem('survivorLocation',"")
             var promise = new Promise(function(resolve,reject){
                 if(confirm("Because that is how the challenge works, this app will only track workouts at a Mattoon Family YMCA location. (Although you can view progress anywhere.) To proceed, we need your permission to access location data.")){
-                    if(navigator.geolocation){
+                    if(navigator && navigator.geolocation){
                         navigator.geolocation.getCurrentPosition(position => {
-                            alert("In")
-                            self.location = {
+                            self.location = { 
                                 latitude: position.coords.latitude,
                                 longitude: position.coords.longitude
                             }
-                            alert(position.coords.latitude)
                             localStorage.setItem('survivorLocation',JSON.stringify(self.location))
                         },error => {
                             if(error.code == error.PERMISSION_DENIED){
@@ -70,21 +57,24 @@ export const SurvivorMixin = {
                 }
             })
             
-            return promise;*/
+            return promise;
         },
         updateLocation(){
             const self = this
             var locationString = localStorage.getItem('survivorLocation');            
-            if(locationString != null && locationString != ""){
-                console.log("Location updated")
-                if(navigator.geolocation){
+            if(locationString != null && locationString != ""){                
+                if(navigator && navigator.geolocation){
                     navigator.geolocation.getCurrentPosition(position => {
                         var location = {
                             latitude: position.coords.latitude,
                             longitude: position.coords.longitude
                         }
                         localStorage.setItem('survivorLocation',JSON.stringify(location))
-                    })
+                        console.log("Location Updated")
+                        console.log(location)
+                    },function(error){
+                        console.log("Error"+error)
+                    })                    
                 }
             }
         }
