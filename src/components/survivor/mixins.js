@@ -10,7 +10,7 @@ export const SurvivorMixin = {
         // Update location every minute
         setInterval(function() {
             self.updateLocation()
-        }, 10 * 1000);    
+        }, 1 * 1000);    
     },
     methods: {
         isCurrentApp: function(){
@@ -70,8 +70,8 @@ export const SurvivorMixin = {
                             longitude: position.coords.longitude
                         }
                         localStorage.setItem('survivorLocation',JSON.stringify(location))
-                        console.log("Location Updated")
-                        console.log(location)
+                        // console.log("Location Updated")
+                        // console.log(location)
                     },function(error){
                         console.log("Error"+error)
                     })                    
