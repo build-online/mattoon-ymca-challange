@@ -2,9 +2,10 @@
     <div class="survivor-home">
         <topbar></topbar>
         <motivation-section :user="user" v-if="user"></motivation-section>
+        <week :base="base" :week="getCurrentWeekNumber()" :user="user"></week>
         <div class="checkin-button-wrapper" v-if="!checkedIn">
             <button type="button" @click="checkIn" :disabled="loading"><i class="fa fa-clock-o" aria-hidden="true"></i> Check In</button>
-        </div>
+        </div>        
         <div class="checkout-button-wrapper" v-if="checkedIn">
             <button type="button" @click="checkOut" :disabled="loading"><i class="fa fa-clock-o" aria-hidden="true"></i> Check Out</button>
         </div>
@@ -22,6 +23,7 @@ import MotivationSection from './common/MotivationSection'
 import { SurvivorMixin } from './mixins'
 import CheckoutModal from './CheckoutModal'
 import YMCALocations from './YMCALocations'
+import Week from './Week'
 
 export default {
     name: 'SurvivorHome',
@@ -29,6 +31,7 @@ export default {
     components:{
         'topbar': Topbar,
         'motivation-section': MotivationSection,
+        'week': Week,
         CheckoutModal
     },
     data: function(){
@@ -161,7 +164,24 @@ export default {
         */
         checkUserLeftYMCALocation(){
             if(this.checkedIn && !this.checkIfUserAtYMCALocation()){
-                alert("It looks like you have left the YMCA, you need to clock out.")
+
+                const self = this
+
+                // Checkout user
+                let workoutRecord = this.getWorkoutItem()
+
+                this.base("Survivor Workouts").update(workoutRecord['id'],{
+                    'End Time': moment().format('YYYY-MM-DDTHH:mm:ss.000Z')
+                },function(error,record){
+                    if(error){
+                        console.log(error)                    
+                    }
+
+                    localStorage.setItem('survivorWorkout',"")
+                    self.checkedIn = false       
+                })
+
+                alert("It looks like you have left the YMCA.")
             }
         }
     }

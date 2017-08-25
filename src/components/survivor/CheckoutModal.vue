@@ -68,7 +68,6 @@ export default {
                     console.log(error)                    
                 }
                 localStorage.setItem('survivorWorkout',"")
-                self.checkedIn =  false
                 alert("Checked Out Successfully.")
                 Bus.$emit("workoutCheckedOut")
                 self.close();                

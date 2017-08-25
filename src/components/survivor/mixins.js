@@ -1,4 +1,5 @@
 import VueRouter from 'vue-router'
+import moment from 'moment'
 
 export const SurvivorMixin = {
     created: function(){
@@ -77,6 +78,14 @@ export const SurvivorMixin = {
                     })                    
                 }
             }
+        },
+
+        /* 
+          * Retrive Week Number
+        */
+        getCurrentWeekNumber(){
+            return 2;
+            return moment().week();
         }
     }
 }
