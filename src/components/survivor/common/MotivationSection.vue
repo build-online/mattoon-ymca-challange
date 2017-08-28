@@ -1,11 +1,18 @@
 <template>
     <div class="motivation-section">
-        <p class="user-info">You are doing great {{ userName }}!</p>
-        <blockquote v-if="randomQuote" class="quote">
-            {{ randomQuote['Quote'] }}
-            <br>
-            <cite>{{ randomQuote['Source'] }}</cite>
-        </blockquote>
+        <div v-if="!loading">
+            <p class="user-info">You are doing great {{ userName }}!</p>
+            <blockquote v-if="randomQuote" class="quote">
+                {{ randomQuote['Quote'] }}
+                <br>
+                <cite>{{ randomQuote['Source'] }}</cite>
+            </blockquote>
+        </div>
+        <div v-else>
+            <div class="loader">
+                <p><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></p>
+            </div>
+        </div>
     </div>
 </template>
 <script>
@@ -19,6 +26,7 @@ export default {
         return {
             base: null,
             quotes: [],
+            loading: false
         }
     },
     computed: {
@@ -57,11 +65,18 @@ export default {
             var args = {
                 view: 'Grid view',
             };
+            this.loading = true
             this.base('Quotes').select(args).eachPage(function page(records, fetchNextPage) {        
-                records.forEach(function(item,key){
-                    self.quotes.push(item);
-                });
-                fetchNextPage();
+                if(records.length > 0){
+                    records.forEach(function(item,key){
+                        self.quotes.push(item);
+                    });
+                    fetchNextPage();                    
+                }else{
+                    self.loading = false
+                }
+            },function(done){
+                self.loading = false
             });
         },
 
@@ -94,6 +109,14 @@ export default {
         background-color: #00A1D5;
         color: white;
         padding: 15px;
+
+        .loader{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 40px;
+            font-size: 34px;
+        }
 
         .user-info{
             text-align: center;

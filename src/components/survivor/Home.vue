@@ -3,11 +3,13 @@
         <topbar></topbar>
         <motivation-section :user="user" v-if="user"></motivation-section>
         <week :base="base" :week="getCurrentWeekNumber()" :user="user"></week>
-        <div class="checkin-button-wrapper" v-if="!checkedIn">
-            <button type="button" @click="checkIn" :disabled="loading"><i class="fa fa-clock-o" aria-hidden="true"></i> Check In</button>
-        </div>        
-        <div class="checkout-button-wrapper" v-if="checkedIn">
-            <button type="button" @click="checkOut" :disabled="loading"><i class="fa fa-clock-o" aria-hidden="true"></i> Check Out</button>
+        <div v-if="buttonLoading == false">
+            <div class="checkin-button-wrapper" v-if="!checkedIn">
+                <button type="button" @click="checkIn" :disabled="loading"><i class="fa fa-clock-o" aria-hidden="true"></i> Check In</button>
+            </div>        
+            <div class="checkout-button-wrapper" v-if="checkedIn">
+                <button type="button" @click="checkOut" :disabled="loading"><i class="fa fa-clock-o" aria-hidden="true"></i> Check Out</button>
+            </div>
         </div>
         <checkout-modal :workout-item="getWorkoutItem()" :base="base" :show="showCheckoutModal" @close="showCheckoutModal = false"></checkout-modal>
     </div>
@@ -24,6 +26,7 @@ import { SurvivorMixin } from './mixins'
 import CheckoutModal from './CheckoutModal'
 import YMCALocations from './YMCALocations'
 import Week from './Week'
+import Router from 'vue-router'
 
 export default {
     name: 'SurvivorHome',
@@ -39,6 +42,7 @@ export default {
             base: null,
             user: null,
             loading: false,
+            buttonLoading: true, // Show button only after coupon data availabe
             checkedIn: false,
             showCheckoutModal: false
         }
@@ -50,13 +54,36 @@ export default {
         const self = this
         Bus.$on("workoutCheckedOut",this.checkedOut);
 
+        // Show button only after coupon data availabe
+        Bus.$on("couponsPopulating",function(){
+            self.buttonLoading = true
+        });
+
+        Bus.$on("couponsPopulated",function(couponsRemaining){
+            self.buttonLoading = false
+
+            let currentWeek = self.getCurrentWeekNumber()
+
+            // Show sorry screen
+            if(couponsRemaining <= 0 && currentWeek <= 12){
+                const router = new Router();
+                router.push('/survivor/sorry');
+            }
+
+            // Show congratulations screen
+            if(currentWeek > 12 && couponsRemaining > 0){
+                const router = new Router();
+                router.push('/survivor/congratulations');
+            }
+        });
+
         // Check if user left YMCA after Check In
         setInterval(function(){
             self.checkUserLeftYMCALocation();
         }, 60 * 1000)
     },
-    computed: {
-        
+    computed: {      
+
     },
     methods: {
         initialize: function(){
@@ -129,8 +156,6 @@ export default {
             };
 
             let calculateDistance = function(p1,p2){
-                console.log(p1);
-                console.log(p2);
                 var R = 6378137; // Earth’s mean radius in meter
                 var dLat = rad(p2.latitude - p1.latitude);
                 var dLong = rad(p2.longitude - p1.longitude);
@@ -148,7 +173,6 @@ export default {
                 var flag = false
                 YMCALocations.forEach(function(item){
                     let distance = calculateDistance(userLocation,item);
-                    console.log(distance)
                     if(distance <= 200){
                         flag = true
                     }

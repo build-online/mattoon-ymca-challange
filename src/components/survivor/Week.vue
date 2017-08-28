@@ -1,28 +1,35 @@
 <template>
     <div class="survivor-week">
-        <div class="week-row">            
-            <div class="current-week">
-                <button type="button" class="btn-week previous"><i class="fa fa-caret-left" aria-hidden="true"></i></button>
-                <span class="text">Week <span>{{ currentWeek }}</span></span>
-                <button type="button" class="btn-week next"><i class="fa fa-caret-right" aria-hidden="true"></i></button>
+        <div v-if="!loading">
+            <div class="week-row">
+                <div class="current-week">
+                    <button @click="prevWeek" type="button" class="btn-week previous"><i class="fa fa-caret-left" aria-hidden="true"></i></button>
+                    <span class="text">Week <span>{{ currentWeek }}</span></span>
+                    <button @click="nextWeek" type="button" class="btn-week next"><i class="fa fa-caret-right" aria-hidden="true"></i></button>
+                </div>
+                <div class="calendar">
+                    <button type="button" class="btn-calendar"><i class="fa fa-calendar" aria-hidden="true"></i></button>                
+                </div>
+                <div class="clearfix"></div>
+            </div>        
+            <p class="today">{{ today }}</p>
+            <div class="points">
+                <ul>
+                    <li><strong>Points Goal: </strong> <span>{{ pointsGoal }}</span></li>
+                    <li><strong>Points Earned: </strong> <span>{{ pointsEarned }}</span></li>
+                </ul>
             </div>
-            <div class="calendar">
-                <button type="button" class="btn-calendar"><i class="fa fa-calendar" aria-hidden="true"></i></button>                
+            <div class="coupons">
+                <ul>
+                    <li>Coupons Remaining: </li>
+                    <li>{{ couponsRemaining }}</li>
+                </ul>
             </div>
-            <div class="clearfix"></div>
-        </div>        
-        <p class="today">{{ today }}</p>
-        <div class="points">
-            <ul>
-                <li><strong>Points Goal: </strong> <span>{{ pointsGoal }}</span></li>
-                <li><strong>Points Earned: </strong> <span>{{ pointsEarned }}</span></li>
-            </ul>
         </div>
-        <div class="coupons">
-            <ul>
-                <li>Coupons Remaining: </li>
-                <li>2</li>
-            </ul>
+        <div v-else>
+            <div class="loader">
+                <p><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></p>
+            </div>
         </div>
     </div>
 </template>
@@ -30,7 +37,8 @@
 import moment from 'moment'
 import Airtable from 'airtable'
 import { AIRTABLE_APP_ID,AIRTABLE_APP_KEY } from '../../config'
-import { ADULT_WEEKS_POINTS } from './WeekConfig'
+import Bus from '../../Bus'
+import { ADULT_WEEKS_POINTS, TOTAL_COUPONS } from './WeekConfig'
 import { SurvivorMixin } from './mixins'
 
 export default {
@@ -40,12 +48,16 @@ export default {
         return {
             currentWeek: this.week,
             pointsEarned: 0,
-            base: null
+            base: null,
+            couponsRemaining: null,
+            loading: false
         }
     },
     mounted: function(){
         this.initialize()
     },    
+    created: function(){
+    },
     computed: {
         today: function(){
             return moment().format('dddd, MMMM DD');
@@ -80,6 +92,7 @@ export default {
             this.currentWeek = this.week
 
             this.getUsersPoint()
+
         },
 
         /* 
@@ -89,12 +102,14 @@ export default {
             const self = this
 
             let year = moment().format('YYYY');
+            
             // get week start date
             let start_date = moment().day("Monday").year(year).week(self.currentWeek).format('YYYY-MM-DD');
             let end_date = moment().day("Monday").year(year).week(self.currentWeek).add(7,'days').format('YYYY-MM-DD');
 
             let workoutRecords = [];
 
+            this.loading = true
             var promise = new Promise(function(resolve,reject){
                 self.base("Survivor Workouts").select({
                     filterByFormula: 'AND( {Start Time} >= DATETIME_PARSE("'+start_date+'"), {Start Time} <= DATETIME_PARSE("'+end_date+'"), {Participant ID} = "'+ self.user['id']+'" )'
@@ -112,9 +127,134 @@ export default {
                 });
             }).then(function(response){
                 if(response == true){
-                    //self.pointsEarned = workoutRecords.length
+
+                    // Calculate points
+                    let totalMinutes = 0
+                    let totalPointsEarned = 0
+
+                    workoutRecords.forEach(function(item){
+                        if(item['fields']['Total Time'] != null && !isNaN(item['fields']['Total Time'])){
+                            totalMinutes += item['fields']['Total Time'];
+                        }
+                    })
+                    
+                    if(totalMinutes > 0){
+                        totalPointsEarned = Math.trunc(totalMinutes / 30)
+                    }
+                    self.pointsEarned = totalPointsEarned
+
+                    self.getCouponsRemaining()
+
                 }
+                self.loading = false;
+            }).catch(function(error){
+                self.loading = false;
             })
+        },
+
+        nextWeek(){
+            if(this.currentWeek < moment().weeksInYear()){
+                this.currentWeek += 1;
+
+                this.getUsersPoint();
+            }
+        },
+
+        prevWeek(){
+            if(this.currentWeek > 1){
+                this.currentWeek -= 1;
+
+                this.getUsersPoint();
+            }
+        },
+
+        getCouponsRemaining(){
+            const self = this; 
+
+            let year = moment().format('YYYY');
+            let couponRecords = []
+
+            self.loading = true
+            Bus.$emit("couponsPopulating")
+            let promise = new Promise( (resolve,reject) => {
+                self.base("Survivor Workouts").select({
+                    filterByFormula: 'AND( {Week Number} < '+ self.currentWeek +', {Year} = '+ year +', {Participant ID} = "'+ self.user['id']+'"  )'
+                }).eachPage(function page(records, fetchNextPage) {
+                    if(records.length > 0){
+                        records.forEach(function(element) {
+                            couponRecords.push(element)    
+                        }, this);
+                        fetchNextPage();
+                    }else{
+                        resolve(true)
+                    }
+                }, function done(error) {
+                    resolve(true)
+                });
+            }).then((response)=>{
+                let totalCoupons = TOTAL_COUPONS 
+
+                if(self.currentWeek != 1){
+                    
+                    // Calculate points remaining
+                    ADULT_WEEKS_POINTS.forEach(function(item,index){
+                        let week = index + 1;
+                        let goal = item;
+
+                        if(week < self.currentWeek){
+                            // User points of week: let = week
+                            let weekRecords = couponRecords.filter(function(element){                        
+                                if(element.get("Week Number") == week){
+                                    return element
+                                }
+                            })
+
+
+                            // Loop through current week records to Retrive workout in minutes from server
+                            let totalMinutes = 0
+
+                            weekRecords.forEach(function(element){
+                                
+                                if(element.get("Week Number") == week){
+                                    totalMinutes += element.get("Total Time")
+                                }
+                                
+                            })
+
+                            // Calculate points from minutes
+                            let totalWeekPoints = 0
+                            if(totalMinutes > 0)
+                                totalWeekPoints = Math.trunc(totalMinutes / 30)
+
+                            // Deduct points to coupons if user did less workout then expected goal
+                            let totalConsumed = 0
+                            if(totalWeekPoints < goal){
+                                totalConsumed = goal - totalWeekPoints
+                                totalCoupons -= totalConsumed
+                            }                           
+                            
+                            /*
+                            console.log("Week: "+week);
+                            console.log("Records Found: "+weekRecords.length);
+                            console.log("Total Minutes: "+totalMinutes);
+                            console.log("Total Week Points: "+totalWeekPoints);                            
+                            console.log("Copons: "+totalCoupons); 
+                            console.log("Copons Consumed: "+totalConsumed); 
+                            */
+
+                        }
+                        
+                    })
+                }
+
+                self.couponsRemaining = totalCoupons
+                Bus.$emit("couponsPopulated",totalCoupons)
+                self.loading = false
+            }).catch((error)=>{
+                console.log(error)
+                self.loading = false
+            });
+            
         }
     }
 }
@@ -122,6 +262,14 @@ export default {
 <style scoped lang="scss">
     .survivor-week{
         margin: 15px 0;
+
+        .loader{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+            font-size: 34px;
+        }
 
         .clearfix{
             clear: both;

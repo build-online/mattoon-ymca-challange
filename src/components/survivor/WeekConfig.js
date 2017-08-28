@@ -27,3 +27,5 @@ export const CHILD_WEEKS_POINTS = [
     12,
     12
 ];
+
+export const TOTAL_COUPONS = 12

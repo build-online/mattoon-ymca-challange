@@ -9,6 +9,9 @@ import IronmanHome from '@/components/ironman/Home'
 // Survivor
 import SurvivorHome from '@/components/survivor/Home'
 import SurvivorLogin from '@/components/survivor/Login'
+import SurvivorSorry from '@/components/survivor/Sorry'
+import SurvivorCongratulations from '@/components/survivor/Congratulations'
+import SurvivorWorkouts from '@/components/survivor/Workouts'
 
 // Placeholder
 import PlaceholderHome from '@/components/placeholder/Home'
@@ -48,6 +51,48 @@ export default new Router({
       path: '/survivor/home',
       name: 'SurvivorHome',
       component: SurvivorHome,
+      beforeEnter: (to, from, next) => {
+
+        // Check if user loggedin
+        if(!SurvivorAuth.userLoggedIn()){
+          next('/survivor/login');
+        }else{
+          next();
+        }
+      }
+    },
+    {
+      path: '/survivor/sorry',
+      name: 'SurvivorSorry',
+      component: SurvivorSorry,
+      beforeEnter: (to, from, next) => {
+
+        // Check if user loggedin
+        if(!SurvivorAuth.userLoggedIn()){
+          next('/survivor/login');
+        }else{
+          next();
+        }
+      }
+    },
+    {
+      path: '/survivor/congratulations',
+      name: 'SurvivorCongratulations',
+      component: SurvivorCongratulations,
+      beforeEnter: (to, from, next) => {
+
+        // Check if user loggedin
+        if(!SurvivorAuth.userLoggedIn()){
+          next('/survivor/login');
+        }else{
+          next();
+        }
+      }
+    },
+    {
+      path: '/survivor/workouts',
+      name: 'SurvivorWorkouts',
+      component: SurvivorWorkouts,
       beforeEnter: (to, from, next) => {
 
         // Check if user loggedin
