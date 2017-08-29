@@ -70,6 +70,12 @@ export default {
                 router.push('/survivor/sorry');
             }
 
+            // Show sorry screen
+            if(couponsRemaining <= 0 && currentWeek > 12){
+                const router = new Router();
+                router.push('/survivor/sorry');
+            }
+
             // Show congratulations screen
             if(currentWeek > 12 && couponsRemaining > 0){
                 const router = new Router();
