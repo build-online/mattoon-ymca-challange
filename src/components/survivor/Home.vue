@@ -179,7 +179,7 @@ export default {
                 var flag = false
                 YMCALocations.forEach(function(item){
                     let distance = calculateDistance(userLocation,item);
-                    if(distance <= 200){
+                    if(distance <= 400){
                         flag = true
                     }
                 });

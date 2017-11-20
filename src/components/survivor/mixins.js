@@ -81,10 +81,11 @@ export const SurvivorMixin = {
         },
 
         /* 
-          * Retrive Week Number
+          * Retrieve Week Number
         */
         getCurrentWeekNumber(){
-            return moment().week();
+            return 1;
+            // return moment().week();
         }
     }
 }
