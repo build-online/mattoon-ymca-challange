@@ -6,7 +6,7 @@
         <div v-if="buttonLoading == false">
             <div class="checkin-button-wrapper" v-if="!checkedIn">
                 <button type="button" @click="checkIn" :disabled="loading"><i class="fa fa-clock-o" aria-hidden="true"></i> Check In</button>
-            </div>        
+            </div>
             <div class="checkout-button-wrapper" v-if="checkedIn">
                 <button type="button" @click="checkOut" :disabled="loading"><i class="fa fa-clock-o" aria-hidden="true"></i> Check Out</button>
             </div>
@@ -88,7 +88,7 @@ export default {
             self.checkUserLeftYMCALocation();
         }, 60 * 1000)
     },
-    computed: {      
+    computed: {
 
     },
     methods: {
@@ -96,7 +96,7 @@ export default {
             // Configure Airtable
     		Airtable.configure({ apiKey: AIRTABLE_APP_KEY });
             this.base = Airtable.base(AIRTABLE_APP_ID);
-            
+
             let user = localStorage.getItem('survivorUser')
             if(user != ""){
                 user = JSON.parse(user)
@@ -107,7 +107,7 @@ export default {
             this.checkedIn = localStorage.getItem('survivorWorkout') != null && localStorage.getItem('survivorWorkout') != "" ? true : false;
         },
 
-        /* 
+        /*
          * Check In
         */
         checkIn: function(){
@@ -121,7 +121,7 @@ export default {
                     self.loading = false
                     if(error){
                         alert("Unable to create workout.");
-                        console.log(error)                    
+                        console.log(error)
                     }
                     localStorage.setItem('survivorWorkout',JSON.stringify(record['_rawJson']))
                     self.checkedIn =  true
@@ -130,21 +130,21 @@ export default {
             }else{
                 alert("It looks like you aren’t at the YMCA. You have to be at a YMCA location to record a workout.")
             }
-            
+
         },
 
-        /* 
+        /*
          * Check Out
         */
         checkOut: function(){
-            this.showCheckoutModal = true;            
+            this.showCheckoutModal = true;
         },
 
         getWorkoutItem(){
             let workoutJSON = localStorage.getItem('survivorWorkout');
             if(workoutJSON){
                 return JSON.parse(workoutJSON)
-            }   
+            }
             return null;
         },
 
@@ -152,7 +152,7 @@ export default {
             this.checkedIn = false
         },
 
-        /* 
+        /*
          * Function will check user is at YMCA or not
         */
         checkIfUserAtYMCALocation(){
@@ -184,16 +184,17 @@ export default {
                     }
                 });
 
-                return flag                
+                return flag
             }
             return false;
         },
 
-        /* 
+        /*
          * Function will check user left YMCA Location
         */
         checkUserLeftYMCALocation(){
-            if(this.checkedIn && !this.checkIfUserAtYMCALocation()){
+            // if(this.checkedIn && !this.checkIfUserAtYMCALocation()){
+            if(this.checkedIn){
 
                 const self = this
 
@@ -204,11 +205,11 @@ export default {
                     'End Time': moment().format('YYYY-MM-DDTHH:mm:ss.000Z')
                 },function(error,record){
                     if(error){
-                        console.log(error)                    
+                        console.log(error)
                     }
 
                     localStorage.setItem('survivorWorkout',"")
-                    self.checkedIn = false       
+                    self.checkedIn = false
                 })
 
                 alert("It looks like you have left the YMCA.")
