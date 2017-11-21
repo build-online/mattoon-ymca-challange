@@ -112,7 +112,7 @@ export default {
         */
         checkIn: function(){
             const self = this
-            if(this.checkIfUserAtYMCALocation()){
+            //if(this.checkIfUserAtYMCALocation()){
                 self.loading = true
                 this.base("Survivor Workouts").create({
                     'Participants': [self.user['id']],
@@ -127,9 +127,9 @@ export default {
                     self.checkedIn =  true
                     alert("Workout Created.")
                 })
-            }else{
-                alert("It looks like you aren’t at the YMCA. You have to be at a YMCA location to record a workout.")
-            }
+            //}else{
+                //alert("It looks like you aren’t at the YMCA. You have to be at a YMCA location to record a workout.")
+            //}
 
         },
 
