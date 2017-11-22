@@ -4,14 +4,14 @@
             <div class="week-row">
                 <div class="current-week">
                     <button @click="prevWeek" type="button" class="btn-week previous"><i class="fa fa-caret-left" aria-hidden="true"></i></button>
-                    <span class="text">Week <span>{{ currentWeek }}</span></span>
+                    <span class="text">Week <span>{{ chalangeWeek }}</span></span>
                     <button @click="nextWeek" type="button" class="btn-week next"><i class="fa fa-caret-right" aria-hidden="true"></i></button>
                 </div>
                 <div class="calendar">
-                    <button type="button" class="btn-calendar"><i class="fa fa-calendar" aria-hidden="true"></i></button>                
+                    <button type="button" class="btn-calendar"><i class="fa fa-calendar" aria-hidden="true"></i></button>
                 </div>
                 <div class="clearfix"></div>
-            </div>        
+            </div>
             <p class="today">{{ today }}</p>
             <div class="points">
                 <ul>
@@ -47,6 +47,7 @@ export default {
     data: function(){
         return {
             currentWeek: this.week,
+            chalangeWeek: this.getChallangeWeekNumber(),
             pointsEarned: 0,
             base: null,
             couponsRemaining: null,
@@ -55,7 +56,7 @@ export default {
     },
     mounted: function(){
         this.initialize()
-    },    
+    },
     created: function(){
     },
     computed: {
@@ -64,8 +65,8 @@ export default {
         },
 
         pointsGoal: function(){
-            if(this.currentWeek <= 12)
-                return ADULT_WEEKS_POINTS[ this.currentWeek - 1 ]
+            if(this.chalangeWeek <= 12)
+                return ADULT_WEEKS_POINTS[ this.chalangeWeek - 1 ]
             return '-'
         },
 
@@ -81,13 +82,13 @@ export default {
 
         week: function(){
             return this.getCurrentWeekNumber();
-        }
+        },
     },
     methods: {
         initialize: function(){
             // Configure Airtable
             Airtable.configure({ apiKey: AIRTABLE_APP_KEY });
-            this.base = Airtable.base(AIRTABLE_APP_ID);            
+            this.base = Airtable.base(AIRTABLE_APP_ID);
 
             this.currentWeek = this.week
 
@@ -95,14 +96,14 @@ export default {
 
         },
 
-        /* 
+        /*
          * Retrive user's current week points
         */
         getUsersPoint(){
             const self = this
 
             let year = moment().format('YYYY');
-            
+
             // get week start date
             let start_date = moment().day("Monday").year(year).week(self.currentWeek).format('YYYY-MM-DD');
             let end_date = moment().day("Monday").year(year).week(self.currentWeek).add(7,'days').format('YYYY-MM-DD');
@@ -116,7 +117,7 @@ export default {
                 }).eachPage(function page(records, fetchNextPage) {
                     if(records){
                         records.forEach(function(element) {
-                            workoutRecords.push(element)    
+                            workoutRecords.push(element)
                         }, this);
                         fetchNextPage();
                     }else{
@@ -137,7 +138,7 @@ export default {
                             totalMinutes += item['fields']['Total Time'];
                         }
                     })
-                    
+
                     if(totalMinutes > 0){
                         totalPointsEarned = Math.trunc(totalMinutes / 30)
                     }
@@ -169,7 +170,7 @@ export default {
         },
 
         getCouponsRemaining(){
-            const self = this; 
+            const self = this;
 
             let year = moment().format('YYYY');
             let couponRecords = []
@@ -182,7 +183,7 @@ export default {
                 }).eachPage(function page(records, fetchNextPage) {
                     if(records.length > 0){
                         records.forEach(function(element) {
-                            couponRecords.push(element)    
+                            couponRecords.push(element)
                         }, this);
                         fetchNextPage();
                     }else{
@@ -192,10 +193,10 @@ export default {
                     resolve(true)
                 });
             }).then((response)=>{
-                let totalCoupons = TOTAL_COUPONS 
+                let totalCoupons = TOTAL_COUPONS
 
                 if(self.currentWeek != 1){
-                    
+
                     // Calculate points remaining
                     ADULT_WEEKS_POINTS.forEach(function(item,index){
                         let week = index + 1;
@@ -203,7 +204,7 @@ export default {
 
                         if(week < self.currentWeek){
                             // User points of week: let = week
-                            let weekRecords = couponRecords.filter(function(element){                        
+                            let weekRecords = couponRecords.filter(function(element){
                                 if(element.get("Week Number") == week){
                                     return element
                                 }
@@ -214,11 +215,11 @@ export default {
                             let totalMinutes = 0
 
                             weekRecords.forEach(function(element){
-                                
+
                                 if(element.get("Week Number") == week){
                                     totalMinutes += element.get("Total Time")
                                 }
-                                
+
                             })
 
                             // Calculate points from minutes
@@ -231,19 +232,19 @@ export default {
                             if(totalWeekPoints < goal){
                                 totalConsumed = goal - totalWeekPoints
                                 totalCoupons -= totalConsumed
-                            }                           
-                            
+                            }
+
                             /*
                             console.log("Week: "+week);
                             console.log("Records Found: "+weekRecords.length);
                             console.log("Total Minutes: "+totalMinutes);
-                            console.log("Total Week Points: "+totalWeekPoints);                            
-                            console.log("Copons: "+totalCoupons); 
-                            console.log("Copons Consumed: "+totalConsumed); 
+                            console.log("Total Week Points: "+totalWeekPoints);
+                            console.log("Copons: "+totalCoupons);
+                            console.log("Copons Consumed: "+totalConsumed);
                             */
 
                         }
-                        
+
                     })
                 }
 
@@ -254,7 +255,7 @@ export default {
                 console.log(error)
                 self.loading = false
             });
-            
+
         }
     }
 }
@@ -280,7 +281,7 @@ export default {
             align-items: center;
 
             .current-week{
-                
+
                 .btn-week{
                     background: transparent;
                     color: #C4C4C4;
@@ -293,9 +294,9 @@ export default {
                     font-weight: bold;
                     font-size: 24px;
                     margin: 0 10px;
-                    vertical-align: middle;                    
+                    vertical-align: middle;
                 }
-                
+
             }
 
             .calendar{
@@ -328,7 +329,7 @@ export default {
                 li{
                     margin-bottom: 15px;
                     font-size: 18px;
-                    vertical-align: middle;                    
+                    vertical-align: middle;
 
                     span{
                         font-size: 28px;
@@ -353,13 +354,13 @@ export default {
                 display: flex;
 
                 li{
-                    display: inline-block;                    
+                    display: inline-block;
                     padding: 15px;
                     color: white;
                     font-weight: bold;
                     line-height: 28px;
                     text-align: center;
-                    
+
                     &:last-child{
                         margin-left: auto;
                         width: 80px;

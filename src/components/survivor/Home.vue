@@ -62,22 +62,24 @@ export default {
         Bus.$on("couponsPopulated",function(couponsRemaining){
             self.buttonLoading = false
 
+            let startWeek = self.getStartWeekNumber()
             let currentWeek = self.getCurrentWeekNumber()
+            let weekDiff = currentWeek - startWeek;
 
             // Show sorry screen
-            if(couponsRemaining <= 0 && currentWeek <= 12){
+            if(couponsRemaining <= 0 && weekDiff > 12){
                 const router = new Router();
                 router.push('/survivor/sorry');
             }
 
             // Show sorry screen
-            if(couponsRemaining <= 0 && currentWeek > 12){
+            if(couponsRemaining <= 0 && weekDiff > 12){
                 const router = new Router();
                 router.push('/survivor/sorry');
             }
 
             // Show congratulations screen
-            if(currentWeek > 12 && couponsRemaining > 0){
+            if(weekDiff > 12 && couponsRemaining > 0){
                 const router = new Router();
                 router.push('/survivor/congratulations');
             }

@@ -3,15 +3,15 @@ import moment from 'moment'
 
 export const SurvivorMixin = {
     created: function(){
-        this.isCurrentApp();        
+        this.isCurrentApp();
     },
     mounted: function(){
         const self = this
-        
+
         // Update location every minute
         setInterval(function() {
             self.updateLocation()
-        }, 1 * 1000);    
+        }, 1 * 1000);
     },
     methods: {
         isCurrentApp: function(){
@@ -36,7 +36,7 @@ export const SurvivorMixin = {
                 if(confirm("Because that is how the challenge works, this app will only track workouts at a Mattoon Family YMCA location. (Although you can view progress anywhere.) To proceed, we need your permission to access location data.")){
                     if(navigator && navigator.geolocation){
                         navigator.geolocation.getCurrentPosition(position => {
-                            self.location = { 
+                            self.location = {
                                 latitude: position.coords.latitude,
                                 longitude: position.coords.longitude
                             }
@@ -47,7 +47,7 @@ export const SurvivorMixin = {
                                 alert("Unable to retrive current location. User Denied to fetch location.")
                                 reject();
                             }
-                        })                                
+                        })
                         resolve(true);
                     }else{
                         alert("Unable to retrive current location.")
@@ -57,13 +57,13 @@ export const SurvivorMixin = {
                     alert("Unable to retrive current location.")
                 }
             })
-            
+
             return promise;
         },
         updateLocation(){
             const self = this
-            var locationString = localStorage.getItem('survivorLocation');            
-            if(locationString != null && locationString != ""){                
+            var locationString = localStorage.getItem('survivorLocation');
+            if(locationString != null && locationString != ""){
                 if(navigator && navigator.geolocation){
                     navigator.geolocation.getCurrentPosition(position => {
                         var location = {
@@ -75,17 +75,25 @@ export const SurvivorMixin = {
                         // console.log(location)
                     },function(error){
                         console.log("Error"+error)
-                    })                    
+                    })
                 }
             }
         },
 
-        /* 
+        /*
           * Retrieve Week Number
         */
         getCurrentWeekNumber(){
-            return 1;
-            // return moment().week();
+            return moment().week();
+        },
+
+        getStartWeekNumber(){
+            var weeknumber = moment("11-15-2017", "MM-DD-YYYY").week();
+            return weeknumber;
+        },
+
+        getChallangeWeekNumber() {
+            return (this.getCurrentWeekNumber() - this.getStartWeekNumber())+1
         }
     }
 }
