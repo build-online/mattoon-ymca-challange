@@ -4,11 +4,11 @@
             <div class="week-row">
                 <div class="current-week">
                     <button @click="prevWeek" type="button" class="btn-week previous"><i class="fa fa-caret-left" aria-hidden="true"></i></button>
-                    <span class="text">Week <span>{{ chalangeWeek }}</span></span>
+                    <span class="text">Week <span>{{ challangeWeek }} <span v-if="(challangeStartWeek + challangeWeek - 1) == currentWeek">*</span></span></span>
                     <button @click="nextWeek" type="button" class="btn-week next"><i class="fa fa-caret-right" aria-hidden="true"></i></button>
                 </div>
                 <div class="calendar">
-                    <button type="button" class="btn-calendar"><i class="fa fa-calendar" aria-hidden="true"></i></button>
+                    <button @click="navigateToWorkout" type="button" class="btn-calendar"><i class="fa fa-calendar" aria-hidden="true"></i></button>
                 </div>
                 <div class="clearfix"></div>
             </div>
@@ -47,7 +47,9 @@ export default {
     data: function(){
         return {
             currentWeek: this.week,
-            chalangeWeek: this.getChallangeWeekNumber(),
+            challangeStartWeek: this.getStartWeekNumber(),
+            currentchallangeWeek: this.getChallangeWeekNumber(),
+            challangeWeek: this.getChallangeWeekNumber(),
             pointsEarned: 0,
             base: null,
             couponsRemaining: null,
@@ -65,8 +67,8 @@ export default {
         },
 
         pointsGoal: function(){
-            if(this.chalangeWeek <= 12)
-                return ADULT_WEEKS_POINTS[ this.chalangeWeek - 1 ]
+            if(this.challangeWeek <= 12)
+                return ADULT_WEEKS_POINTS[ this.challangeWeek - 1 ]
             return '-'
         },
 
@@ -105,8 +107,9 @@ export default {
             let year = moment().format('YYYY');
 
             // get week start date
-            let start_date = moment().day("Monday").year(year).week(self.currentWeek).format('YYYY-MM-DD');
-            let end_date = moment().day("Monday").year(year).week(self.currentWeek).add(7,'days').format('YYYY-MM-DD');
+            let week = (self.challangeStartWeek+self.challangeWeek -1);
+            let start_date = moment().day("Monday").year(year).week(week).format('YYYY-MM-DD');
+            let end_date = moment().day("Monday").year(year).week(week).add(7,'days').format('YYYY-MM-DD');
 
             let workoutRecords = [];
 
@@ -154,16 +157,16 @@ export default {
         },
 
         nextWeek(){
-            if(this.currentWeek < moment().weeksInYear()){
-                this.currentWeek += 1;
+            if(this.challangeWeek < 12){
+                this.challangeWeek += 1;
 
                 this.getUsersPoint();
             }
         },
 
         prevWeek(){
-            if(this.currentWeek > 1){
-                this.currentWeek -= 1;
+            if(this.challangeWeek > 1){
+                this.challangeWeek -= 1;
 
                 this.getUsersPoint();
             }
@@ -179,7 +182,7 @@ export default {
             Bus.$emit("couponsPopulating")
             let promise = new Promise( (resolve,reject) => {
                 self.base("Survivor Workouts").select({
-                    filterByFormula: 'AND( {Week Number} < '+ self.currentWeek +', {Year} = '+ year +', {Participant ID} = "'+ self.user['id']+'"  )'
+                    filterByFormula: 'AND( {Week Number} >= '+ self.challangeStartWeek +',{Week Number} < '+ self.currentWeek +', {Year} = '+ year +', {Participant ID} = "'+ self.user['id']+'"  )'
                 }).eachPage(function page(records, fetchNextPage) {
                     if(records.length > 0){
                         records.forEach(function(element) {
@@ -195,14 +198,14 @@ export default {
             }).then((response)=>{
                 let totalCoupons = TOTAL_COUPONS
 
-                if(self.currentWeek != 1){
+                if(self.currentchallangeWeek != 1){
 
                     // Calculate points remaining
                     ADULT_WEEKS_POINTS.forEach(function(item,index){
                         let week = index + 1;
                         let goal = item;
 
-                        if(week < self.currentWeek){
+                        if(week < self.currentchallangeWeek){
                             // User points of week: let = week
                             let weekRecords = couponRecords.filter(function(element){
                                 if(element.get("Week Number") == week){
@@ -256,6 +259,10 @@ export default {
                 self.loading = false
             });
 
+        },
+
+        navigateToWorkout(){
+            this.$router.push('/survivor/workouts');
         }
     }
 }

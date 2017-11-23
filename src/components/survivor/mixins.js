@@ -93,7 +93,7 @@ export const SurvivorMixin = {
         },
 
         getChallangeWeekNumber() {
-            return (this.getCurrentWeekNumber() - this.getStartWeekNumber())+1
+            return (this.getCurrentWeekNumber() - this.getStartWeekNumber()) +1
         }
     }
 }

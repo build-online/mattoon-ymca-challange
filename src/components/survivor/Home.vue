@@ -64,15 +64,15 @@ export default {
 
             let startWeek = self.getStartWeekNumber()
             let currentWeek = self.getCurrentWeekNumber()
-            let weekDiff = currentWeek - startWeek;
+            let weekDiff = currentWeek - startWeek + 1;
 
             // Show sorry screen
-            if(couponsRemaining <= 0 && weekDiff > 12){
+            if(couponsRemaining <= 0 && weekDiff < 12){
                 const router = new Router();
                 router.push('/survivor/sorry');
             }
 
-            // Show sorry screen
+            // This condition case can happen in testing
             if(couponsRemaining <= 0 && weekDiff > 12){
                 const router = new Router();
                 router.push('/survivor/sorry');

@@ -8,7 +8,7 @@ export const ADULT_WEEKS_POINTS = [
     10,
     10,
     11,
-    11,   
+    11,
     12,
     12
 ];
@@ -23,7 +23,7 @@ export const CHILD_WEEKS_POINTS = [
     10,
     10,
     11,
-    11,   
+    11,
     12,
     12
 ];
