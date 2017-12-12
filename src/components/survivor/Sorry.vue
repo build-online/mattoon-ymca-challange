@@ -3,7 +3,7 @@
         <topbar></topbar>
         <div class="survivor-sorry-body">
             <h1 class="heading">Don't Stop Now</h1>
-            <p class="content">Unfortunately, you’ve failed the requirements to continue with the Survivor challenge. But please, don’t stop the progress you’ve made this year. Keep investing in your health and lifestyle.</p>
+            <p class="content">Don’t stop now! Unfortunately you have not successfully completed the requirements to continue in the Survivor program. We are proud of the progress you have made and encourage you to keep moving forward. Keep updated on our next program by checking our Facebook page.</p>
             <button class="btn-view-workout" type="button" @click="viewWorkout"><i class="fa fa-calendar" aria-hidden="true"></i> Your Workouts</button>
         </div>
     </div>
@@ -12,7 +12,7 @@
 import Topbar from './common/Topbar'
 import Router from 'vue-router'
 
-export default {    
+export default {
     name: 'SurvivorSorry',
     components: {
         'topbar': Topbar
@@ -39,8 +39,8 @@ export default {
         padding: 15px;
         text-align: center;
 
-        .heading{            
-            color: #0160AE;            
+        .heading{
+            color: #0160AE;
             margin-bottom: 50px;
         }
 
