@@ -66,7 +66,7 @@ export default {
                 view: 'Grid view',
             };
             this.loading = true
-            this.base('Quotes').select(args).eachPage(function page(records, fetchNextPage) {
+            this.base('Survivor Quotes').select(args).eachPage(function page(records, fetchNextPage) {
                 if(records.length > 0){
                     records.forEach(function(item,key){
                         self.quotes.push(item);
