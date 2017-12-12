@@ -297,7 +297,7 @@ export default {
                 }
 
                 .text{
-                    color: #0160AE;
+                    color: #01a490;
                     font-weight: bold;
                     font-size: 24px;
                     margin: 0 10px;
@@ -351,7 +351,7 @@ export default {
         }
 
         .coupons{
-            background: #007EB5;
+            background: #01a490;
             margin: 30px 0;
 
             ul{

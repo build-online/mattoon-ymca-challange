@@ -33,14 +33,14 @@ export default {
         userName: function(){
             return this.user['fields']['First Name']
         },
-        randomQuote: function(){				
+        randomQuote: function(){
             if(this.quotes.length > 0){
-                const quotes = this.shuffle(this.quotes);	
+                const quotes = this.shuffle(this.quotes);
                 return quotes[0].fields;
             }
 
             return null;
-        },    
+        },
     },
     mounted: function(){
         this.initialize();
@@ -53,7 +53,7 @@ export default {
             // Configure Airtable
     		Airtable.configure({ apiKey: AIRTABLE_APP_KEY });
             this.base = Airtable.base(AIRTABLE_APP_ID);
-            
+
             // Retrive quotes
             this.getQuotes();
         },
@@ -61,17 +61,17 @@ export default {
         /* Function will retrive random quote from airtable base */
         getQuotes: function(){
             var self = this;
-    
+
             var args = {
                 view: 'Grid view',
             };
             this.loading = true
-            this.base('Quotes').select(args).eachPage(function page(records, fetchNextPage) {        
+            this.base('Quotes').select(args).eachPage(function page(records, fetchNextPage) {
                 if(records.length > 0){
                     records.forEach(function(item,key){
                         self.quotes.push(item);
                     });
-                    fetchNextPage();                    
+                    fetchNextPage();
                 }else{
                     self.loading = false
                 }
@@ -80,7 +80,7 @@ export default {
             });
         },
 
-        /* 
+        /*
             * Function to shuffle quotes items
         */
         shuffle(array) {
@@ -96,7 +96,7 @@ export default {
                 temporaryValue = array[currentIndex];
                 array[currentIndex] = array[randomIndex];
                 array[randomIndex] = temporaryValue;
-            }	
+            }
 
             return array;
         },
@@ -106,7 +106,7 @@ export default {
 
 <style lang="scss" scoped>
     .motivation-section{
-        background-color: #00A1D5;
+        background-color: #01a490;
         color: white;
         padding: 15px;
 

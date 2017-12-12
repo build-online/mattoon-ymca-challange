@@ -14,6 +14,13 @@
     </modal>
 </template>
 
+<style scoped>
+    .modal-default-button{
+        background: #01a490;
+    }
+</style>
+
+
 <script>
 import Modal from '../Modal'
 import moment from 'moment'
@@ -31,7 +38,7 @@ export default {
       loading: false
     };
   },
-  methods: {    
+  methods: {
     close: function () {
       this.$emit('close');
       this.text = "",
@@ -65,14 +72,14 @@ export default {
                 self.loading = false
                 if(error){
                     alert("Unable to clock out.");
-                    console.log(error)                    
+                    console.log(error)
                 }
                 localStorage.setItem('survivorWorkout',"")
                 alert("Checked Out Successfully.")
                 Bus.$emit("workoutCheckedOut")
-                self.close();                
+                self.close();
             })
-        }        
+        }
     }
   }
 }

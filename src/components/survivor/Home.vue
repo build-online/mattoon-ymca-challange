@@ -234,6 +234,7 @@ export default {
                 display: inline-block;
                 font-size: 20px;
                 padding: 15px 25px;
+                background: #01a490;
 
                 &:disabled{
                     background: #bfd2da;
