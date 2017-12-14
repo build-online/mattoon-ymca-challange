@@ -320,7 +320,7 @@ export default {
 
         .today{
             font-weight: bold;
-            color: #A43078;
+            color: #f47920;
             text-align: center;
             font-size: 20px;
         }
@@ -344,7 +344,7 @@ export default {
                         margin-left: 10px;
                         vertical-align: middle;
                         font-weight: bold;
-                        color: #A43078;
+                        color: #f47920;
                     }
                 }
             }
@@ -372,7 +372,7 @@ export default {
                         margin-left: auto;
                         width: 80px;
                         text-align: center;
-                        background: #A43078;
+                        background: #f47920;
                         font-size: 28px;
                         vertical-align: middle;
                     }
