@@ -86,9 +86,10 @@ export default {
         });
 
         // Check if user left YMCA after Check In
-        setInterval(function(){
+        /*setInterval(function(){
             self.checkUserLeftYMCALocation();
         }, 60 * 1000)
+        */
     },
     computed: {
 
@@ -195,8 +196,7 @@ export default {
          * Function will check user left YMCA Location
         */
         checkUserLeftYMCALocation(){
-            // if(this.checkedIn && !this.checkIfUserAtYMCALocation()){
-            if(this.checkedIn){
+            if(this.checkedIn && !this.checkIfUserAtYMCALocation()){
 
                 const self = this
 
