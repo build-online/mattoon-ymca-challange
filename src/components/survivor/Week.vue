@@ -38,7 +38,7 @@ import moment from 'moment'
 import Airtable from 'airtable'
 import { AIRTABLE_APP_ID,AIRTABLE_APP_KEY } from '../../config'
 import Bus from '../../Bus'
-import { ADULT_WEEKS_POINTS, TOTAL_COUPONS } from './WeekConfig'
+import { ADULT_WEEKS_POINTS, CHILD_WEEKS_POINTS, TOTAL_COUPONS } from './WeekConfig'
 import { SurvivorMixin } from './mixins'
 
 export default {
@@ -66,9 +66,20 @@ export default {
             return moment().format('dddd, MMMM DD');
         },
 
+        /*
+            Return points based on whether user is Child / Adult
+        */
+        weekPoints() {
+            if((typeof this.user.fields['Junior Member']) != 'undefined') {
+                return CHILD_WEEKS_POINTS
+            }
+
+            return ADULT_WEEKS_POINTS
+        },
+
         pointsGoal: function(){
             if(this.challangeWeek <= 12)
-                return ADULT_WEEKS_POINTS[ this.challangeWeek - 1 ]
+                return this.weekPoints[ this.challangeWeek - 1 ]
             return '-'
         },
 
@@ -196,12 +207,12 @@ export default {
                     resolve(true)
                 });
             }).then((response)=>{
-                let totalCoupons = TOTAL_COUPONS
+                let totalCoupons = self.user.fields.Coupons
 
                 if(self.currentchallangeWeek != 1){
 
                     // Calculate points remaining
-                    ADULT_WEEKS_POINTS.forEach(function(item,index){
+                    this.weekPoints.forEach(function(item,index){
                         let week = index + 1;
                         let goal = item;
 
@@ -263,7 +274,7 @@ export default {
 
         navigateToWorkout(){
             this.$router.push('/survivor/workouts');
-        }
+        },
     }
 }
 </script>

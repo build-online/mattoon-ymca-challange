@@ -10,9 +10,9 @@ export default {
 	login(participant,pin){
 		return new Promise(function(resolve,reject){
 			var args = {
-				view: 'Grid view',        
+				view: 'Grid view',
 				filterByFormula: "AND({Pin} = '"+pin+"',RECORD_ID() = '"+participant+"')",
-				fields: ['Name','First Name','Last Name','Phone','Email','Notes']
+				fields: ['Name','First Name','Last Name','Phone','Email','Notes','Junior Member','Coupons']
 			};
 			base("Survivor Participants").select(args).eachPage(function page(records, fetchNextPage){
 				if(records.length > 0){

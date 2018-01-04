@@ -2,8 +2,8 @@
     <div class="survivor-home">
         <topbar></topbar>
         <motivation-section :user="user" v-if="user"></motivation-section>
-        <week :base="base" :week="getCurrentWeekNumber()" :user="user"></week>
-        <div v-if="buttonLoading == false">
+        <week ref="weekComponent" :base="base" :week="getCurrentWeekNumber()" :user="user"></week>
+        <div v-if="buttonLoading == false && getCurrentWeekNumber() == challangeWeek">
             <div class="checkin-button-wrapper" v-if="!checkedIn">
                 <button type="button" @click="checkIn" :disabled="loading"><i class="fa fa-clock-o" aria-hidden="true"></i> Check In</button>
             </div>
@@ -92,7 +92,9 @@ export default {
         */
     },
     computed: {
-
+        challangeWeek() {
+            return this.$refs.weekComponent.challangeWeek
+        }
     },
     methods: {
         initialize: function(){
