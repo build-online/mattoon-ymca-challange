@@ -84,11 +84,12 @@ export const SurvivorMixin = {
           * Retrieve Week Number
         */
         getCurrentWeekNumber(){
-            return moment().week();
+            return 4;
+            //return moment().week();
         },
 
         getStartWeekNumber(){
-            var weeknumber = moment("01-01-2018", "MM-DD-YYYY").week();
+            var weeknumber = moment("01-21-2018", "MM-DD-YYYY").week();
             return weeknumber;
         },
 

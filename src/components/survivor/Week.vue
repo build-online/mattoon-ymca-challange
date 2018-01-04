@@ -63,7 +63,7 @@ export default {
     },
     computed: {
         today: function(){
-            return moment().format('dddd, MMMM DD');
+            return moment().week(this.currentWeek).format('dddd, MMMM DD');
         },
 
         /*
@@ -115,12 +115,12 @@ export default {
         getUsersPoint(){
             const self = this
 
-            let year = moment().format('YYYY');
+            let year = parseInt(moment().format('YYYY'));
 
             // get week start date
             let week = (self.challangeStartWeek+self.challangeWeek -1);
-            let start_date = moment().day("Monday").year(year).week(week).format('YYYY-MM-DD');
-            let end_date = moment().day("Monday").year(year).week(week).add(7,'days').format('YYYY-MM-DD');
+            let start_date = moment().day("Sunday").week(week).format('YYYY-MM-DD');
+            let end_date = moment().day("Sunday").week(week).add(6,'days').format('YYYY-MM-DD');
 
             let workoutRecords = [];
 
