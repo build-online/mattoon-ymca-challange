@@ -119,8 +119,8 @@ export default {
 
             // get week start date
             let week = (self.challangeStartWeek+self.challangeWeek -1);
-            let start_date = moment().day("Sunday").week(week).format('YYYY-MM-DD');
-            let end_date = moment().day("Sunday").week(week).add(6,'days').format('YYYY-MM-DD');
+            let start_date = moment().day("Sunday").week(week).format('YYYY-MM-DD 00:00');
+            let end_date = moment().day("Sunday").week(week).add(6,'days').format('YYYY-MM-DD 23:59');
 
             let workoutRecords = [];
 
@@ -154,7 +154,20 @@ export default {
                     })
 
                     if(totalMinutes > 0){
-                        totalPointsEarned = Math.trunc(totalMinutes / 30)
+                        let points_1 = Math.trunc(totalMinutes / 30)
+
+                        // Calculation for half point
+                        let mod_points = Math.trunc(totalMinutes % 30)
+                        let points_2 = 0
+                        if(mod_points >= 15){
+                            points_2 = Math.trunc(mod_points / 15)
+                            points_2 = (points_2 / 2)
+                        }
+
+                        totalPointsEarned = points_1 + points_2
+
+                        if(totalPointsEarned >= 4)
+                            totalPointsEarned = self.pointsGoal
                     }
                     self.pointsEarned = totalPointsEarned
 
