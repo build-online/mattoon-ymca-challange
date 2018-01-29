@@ -3,7 +3,7 @@
         <topbar></topbar>
         <motivation-section :user="user" v-if="user"></motivation-section>
         <week ref="weekComponent" :base="base" :week="getCurrentWeekNumber()" :user="user"></week>
-        <div v-if="buttonLoading == false && getCurrentWeekNumber() == challangeWeek">
+        <div v-if="buttonLoading == false && challangeWeek == currentChallangeWeek">
             <div class="checkin-button-wrapper" v-if="!checkedIn">
                 <button type="button" @click="checkIn" :disabled="loading"><i class="fa fa-clock-o" aria-hidden="true"></i> Check In</button>
             </div>
@@ -94,6 +94,9 @@ export default {
     computed: {
         challangeWeek() {
             return this.$refs.weekComponent.challangeWeek
+        },
+        currentChallangeWeek() {
+            return this.$refs.weekComponent.currentchallangeWeek
         }
     },
     methods: {

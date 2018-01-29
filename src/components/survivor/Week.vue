@@ -214,10 +214,11 @@ export default {
 
                     // Calculate points remaining
                     this.weekPoints.forEach(function(item,index){
-                        let week = index + 1;
+                        let week = self.challangeStartWeek + index;
+
                         let goal = item;
 
-                        if(week < self.currentchallangeWeek){
+                        if(week < self.currentWeek){
                             // User points of week: let = week
                             let weekRecords = couponRecords.filter(function(element){
                                 if(element.get("Week Number") == week){
@@ -225,22 +226,19 @@ export default {
                                 }
                             })
 
-
                             // Loop through current week records to Retrive workout in minutes from server
-                            let totalMinutes = 0
+                            let totalWeekPoints = 0
 
                             weekRecords.forEach(function(element){
 
                                 if(element.get("Week Number") == week){
-                                    totalMinutes += element.get("Total Time")
+                                    let minutes = element.get("Total Time")
+                                    let points = Math.trunc(minutes / 15) / 2
+                                    points = Math.min(points, goal)
+                                    totalWeekPoints += points
                                 }
 
                             })
-
-                            // Calculate points from minutes
-                            let totalWeekPoints = 0
-                            if(totalMinutes > 0)
-                                totalWeekPoints = Math.trunc(totalMinutes / 30)
 
                             // Deduct points to coupons if user did less workout then expected goal
                             let totalConsumed = 0
