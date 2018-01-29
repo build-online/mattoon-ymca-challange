@@ -12,7 +12,7 @@
 import Topbar from './common/Topbar'
 import Router from 'vue-router'
 
-export default {    
+export default {
     name: 'SurvivorCongratulations',
     components: {
         'topbar': Topbar
@@ -24,8 +24,8 @@ export default {
     },
     methods: {
         viewWorkout(){
-            const router = new Router();
-            router.push('/survivor/workouts');
+            //const router = new Router();
+            this.$router.push('/survivor/workouts');
         }
     }
 }
@@ -39,8 +39,8 @@ export default {
         padding: 15px;
         text-align: center;
 
-        .heading{            
-            color: #0160AE;            
+        .heading{
+            color: #0160AE;
             margin-bottom: 50px;
         }
 

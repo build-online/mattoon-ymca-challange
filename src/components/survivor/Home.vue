@@ -68,20 +68,20 @@ export default {
 
             // Show sorry screen
             if(couponsRemaining <= 0 && weekDiff < 12){
-                const router = new Router();
-                router.push('/survivor/sorry');
+                //const router = new Router();
+                this.$router.push('/survivor/sorry');
             }
 
             // This condition case can happen in testing
             if(couponsRemaining <= 0 && weekDiff > 12){
-                const router = new Router();
-                router.push('/survivor/sorry');
+                //const router = new Router();
+                this.$router.push('/survivor/sorry');
             }
 
             // Show congratulations screen
             if(weekDiff > 12 && couponsRemaining > 0){
-                const router = new Router();
-                router.push('/survivor/congratulations');
+                //const router = new Router();
+                this.$router.push('/survivor/congratulations');
             }
         });
 

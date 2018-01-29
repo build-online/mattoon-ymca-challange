@@ -24,8 +24,8 @@ export default {
     },
     methods: {
         viewWorkout(){
-            const router = new Router();
-             router.push('/survivor/workouts');
+            //const router = new Router();
+            this.$router.push('/survivor/workouts');
         }
     }
 }

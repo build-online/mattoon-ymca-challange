@@ -154,20 +154,8 @@ export default {
                     })
 
                     if(totalMinutes > 0){
-                        let points_1 = Math.trunc(totalMinutes / 30)
-
-                        // Calculation for half point
-                        let mod_points = Math.trunc(totalMinutes % 30)
-                        let points_2 = 0
-                        if(mod_points >= 15){
-                            points_2 = Math.trunc(mod_points / 15)
-                            points_2 = (points_2 / 2)
-                        }
-
-                        totalPointsEarned = points_1 + points_2
-
-                        if(totalPointsEarned >= 4)
-                            totalPointsEarned = self.pointsGoal
+                        let points = Math.trunc(totalMinutes / 15) / 2
+                        totalPointsEarned = Math.min(points, self.pointsGoal)
                     }
                     self.pointsEarned = totalPointsEarned
 

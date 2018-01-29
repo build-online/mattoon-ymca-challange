@@ -4,10 +4,10 @@
     <img :src="imageURL" alt="" class="welcomeImage">
     <p class="welcomeMessage">
       {{content}}
-    </p>    
+    </p>
     <h2>Sign In</h2>
     <form @submit.prevent="signIn">
-      
+
       <!--Replace this with a material component.  Pull names from Airtable Participants-->
       <label >Name
       <v-select :debounce="250" :on-search="getParticipants" v-model="participant" :options="participants" placeholder="Select Participant"></v-select>
@@ -20,7 +20,7 @@
     </form>
     <div class="submitButton">
       <button type="button" @click="signIn" :disabled="loading">Sign In</button>
-    </div>    
+    </div>
   </section>
 </template>
 
@@ -48,16 +48,16 @@ export default {
   },
   created: function(){
   },
-  mounted: function(){    
+  mounted: function(){
     // If user is loggedin then redirect it to home page
     if(SurvivorAuth.userLoggedIn()){
       const router = new VueRouter();
       router.push('/survivor/home');
     }
-    
+
     // Configure Airtable
     Airtable.configure({ apiKey: AIRTABLE_APP_KEY });
-    this.base = Airtable.base(AIRTABLE_APP_ID);    
+    this.base = Airtable.base(AIRTABLE_APP_ID);
 
     // this.getParticipants();
     this.getInfo();
@@ -87,7 +87,7 @@ export default {
       pin: "",
       base: null,
       loading: false,
-      info: null,      
+      info: null,
       location: null
     }
   },
@@ -106,11 +106,9 @@ export default {
       }
 
       this.loading = true;
-      SurvivorAuth.login(this.participant.value,this.pin).then(function(response){        
-        console.log(response)
+      SurvivorAuth.login(this.participant.value,this.pin).then(function(response){
         if(response == true){
-          const router = new VueRouter();
-          router.push('/survivor/home');
+          self.$router.push('/survivor/home')
         }else{
           alert("Unable to login");
         }
@@ -120,24 +118,24 @@ export default {
         alert("Unable to login");
         self.loading = false;
       })
-      
+
     },
     getParticipants: function(search,loading){
       var self = this;
       loading(true)
-      
+
       var args = {
         view: 'Grid view',
         fields: ['Name','First Name','Last Name'],
         filterByFormula: "SEARCH(LOWER(TRIM('"+search+"')),LOWER(TRIM({Name})))",
       };
-      this.base('Survivor Participants').select(args).eachPage(function page(records, fetchNextPage) {        
+      this.base('Survivor Participants').select(args).eachPage(function page(records, fetchNextPage) {
         self.participants = []
         records.forEach(function(item,key){
-          self.participants.push({            
+          self.participants.push({
             label: item.fields['Name'],
             value: item.id
-          });          
+          });
         });
         loading(false)
       },function(err){

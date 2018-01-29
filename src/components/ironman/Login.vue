@@ -7,7 +7,7 @@
     </p>
     <h2>Sign In</h2>
     <form @submit.prevent="signIn">
-      
+
       <!--Replace this with a material component.  Pull names from Airtable Participants-->
       <label >Name
       <v-select :debounce="250" :on-search="getParticipants" v-model="participant" :options="participants" placeholder="Select Participant"></v-select>
@@ -51,13 +51,13 @@ export default {
   mounted: function(){
     // If user is loggedin then redirect it to home page
     if(Auth.userLoggedIn()){
-      const router = new VueRouter();
-      router.push('/ironman/home');
+      //const router = new VueRouter();
+      this.$router.push('/ironman/home');
     }
-    
+
     // Configure Airtable
     Airtable.configure({ apiKey: AIRTABLE_APP_KEY });
-    this.base = Airtable.base(AIRTABLE_APP_ID);    
+    this.base = Airtable.base(AIRTABLE_APP_ID);
 
     // this.getParticipants();
     this.getInfo();
@@ -101,7 +101,7 @@ export default {
       }
 
       this.loading = true;
-      Auth.login(this.participant.value,this.pin).then(function(response){        
+      Auth.login(this.participant.value,this.pin).then(function(response){
         if(response == true){
           const router = new VueRouter();
           router.push('/ironman/home');
@@ -114,24 +114,24 @@ export default {
         alert("Unable to login");
         self.loading = false;
       })
-      
+
     },
     getParticipants: function(search,loading){
       var self = this;
       loading(true)
-      
+
       var args = {
         view: 'Grid view',
         fields: ['Name','First Name','Last Name'],
         filterByFormula: "SEARCH(LOWER(TRIM('"+search+"')),LOWER(TRIM({Name})))",
       };
-      this.base('Participants').select(args).eachPage(function page(records, fetchNextPage) {        
+      this.base('Participants').select(args).eachPage(function page(records, fetchNextPage) {
         self.participants = []
         records.forEach(function(item,key){
-          self.participants.push({            
+          self.participants.push({
             label: item.fields['Name'],
             value: item.id
-          });          
+          });
         });
         loading(false)
       },function(err){

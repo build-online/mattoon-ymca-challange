@@ -18,8 +18,8 @@
                 apps: [],
             }
         },
-        mounted: function(){  
-            
+        mounted: function(){
+
         },
         created: function(){
             const self = this
@@ -58,8 +58,8 @@
                         active = item;
                         return;
                     }
-                })                
-                
+                })
+
                 if(active != null){
                     this.currentApp = active;
                     localStorage.setItem("currentApp", JSON.stringify(this.currentApp._rawJson));
@@ -68,15 +68,14 @@
             redirectToApp: function(){
                 var active = this.currentApp;
 
-                const router = new VueRouter();                
                 if(active != null){
                     const code = active['fields']['Code']
                     if(code == 'IC'){
-                        router.push('/ironman/home');
+                        this.$router.push('/ironman/home');
                     }else if(code == 'SC'){
-                        router.push('/survivor/home');
+                        this.$router.push('/survivor/home');
                     }else if(code == 'P'){
-                        router.push('/placeholder/home');
+                        this.$router.push('/placeholder/home');
                     }
                 }
             }
