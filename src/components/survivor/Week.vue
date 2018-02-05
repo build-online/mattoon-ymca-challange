@@ -155,7 +155,7 @@ export default {
 
                     if(totalMinutes > 0){
                         let points = Math.trunc(totalMinutes / 15) / 2
-                        totalPointsEarned = Math.min(points, self.pointsGoal)
+                        totalPointsEarned = Math.max(points, self.pointsGoal)
                     }
                     self.pointsEarned = totalPointsEarned
 
