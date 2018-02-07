@@ -46,6 +46,7 @@ export default {
     mixins: [SurvivorMixin],
     data: function(){
         return {
+            KEEP_BROKEN_POINT_CALCULATION_FOR_EARLY_WEEKS: true,
             currentWeek: this.week,
             challangeStartWeek: this.getStartWeekNumber(),
             currentchallangeWeek: this.getChallangeWeekNumber(),
@@ -144,16 +145,22 @@ export default {
                 if(response == true){
 
                     // Calculate points
+                    let totalMinutes = 0
                     let totalPointsEarned = 0
 
                     workoutRecords.forEach(function(item){
                         if(item['fields']['Total Time'] != null && !isNaN(item['fields']['Total Time'])){
                             let minutes = item['fields']['Total Time']
+                            totalMinutes += minutes
                             let points = Math.trunc(minutes / 15) / 2
                             points = Math.min(points, 4)
                             totalPointsEarned += points
                         }
                     })
+
+                    if (self.KEEP_BROKEN_POINT_CALCULATION_FOR_EARLY_WEEKS)
+                        if (self.challangeWeek < 3)
+                            totalPointsEarned = Math.trunc(totalMinutes / 15) / 2
 
                     self.pointsEarned = totalPointsEarned
 
@@ -225,19 +232,24 @@ export default {
                             })
 
                             // Loop through current week records to Retrive workout in minutes from server
+                            let totalWeekMinutes = 0
                             let totalWeekPoints = 0
 
                             weekRecords.forEach(function(element){
 
                                 if(element.get("Week Number") == week){
                                     let minutes = element.get("Total Time")
+                                    totalWeekMinutes += minutes
                                     let points = Math.trunc(minutes / 15) / 2
-                                    // points = Math.min(points, goal)
                                     points = Math.min(points, 4)
                                     totalWeekPoints += points
                                 }
 
                             })
+
+                            if (self.KEEP_BROKEN_POINT_CALCULATION_FOR_EARLY_WEEKS)
+                                if (index + 1 < 3)
+                                    totalWeekPoints = Math.trunc(totalWeekMinutes / 15) / 2
 
                             // Deduct points to coupons if user did less workout then expected goal
                             let totalConsumed = 0
