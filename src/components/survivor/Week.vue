@@ -144,19 +144,17 @@ export default {
                 if(response == true){
 
                     // Calculate points
-                    let totalMinutes = 0
                     let totalPointsEarned = 0
 
                     workoutRecords.forEach(function(item){
                         if(item['fields']['Total Time'] != null && !isNaN(item['fields']['Total Time'])){
-                            totalMinutes += item['fields']['Total Time'];
+                            let minutes = item['fields']['Total Time']
+                            let points = Math.trunc(minutes / 15) / 2
+                            points = Math.min(points, 4)
+                            totalPointsEarned += points
                         }
                     })
 
-                    if(totalMinutes > 0){
-                        let points = Math.trunc(totalMinutes / 15) / 2
-                        totalPointsEarned = Math.max(points, self.pointsGoal)
-                    }
                     self.pointsEarned = totalPointsEarned
 
                     self.getCouponsRemaining()
@@ -234,7 +232,8 @@ export default {
                                 if(element.get("Week Number") == week){
                                     let minutes = element.get("Total Time")
                                     let points = Math.trunc(minutes / 15) / 2
-                                    points = Math.min(points, goal)
+                                    // points = Math.min(points, goal)
+                                    points = Math.min(points, 4)
                                     totalWeekPoints += points
                                 }
 
