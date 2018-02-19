@@ -11,6 +11,9 @@
 <script>
 import Topbar from './common/Topbar'
 import Router from 'vue-router'
+import axios from 'axios'
+import Airtable from 'airtable'
+import { AIRTABLE_APP_ID,AIRTABLE_APP_KEY } from '../../config'
 
 export default {
     name: 'SurvivorSorry',
@@ -19,14 +22,38 @@ export default {
     },
     data: function(){
         return {
-
+            base: null,
+            user: null,
         }
     },
     methods: {
         viewWorkout(){
             //const router = new Router();
             this.$router.push('/survivor/workouts');
+        },
+
+        participantOut() {
+            const self = this
+
+            Airtable.configure({ apiKey: AIRTABLE_APP_KEY });
+            this.base = Airtable.base(AIRTABLE_APP_ID);
+
+            let user = localStorage.getItem('survivorUser')
+            if(user != ""){
+                user = JSON.parse(user)
+                this.user = user
+            }
+
+            // Set out field to true
+            self.base("Survivor Participants")
+                .update(self.user['id'],{
+                    'Out': true
+                });
         }
+    },
+
+    mounted() {
+        this.participantOut();
     }
 }
 </script>
