@@ -95,6 +95,7 @@ export default {
     signIn: function(){
       var self = this;
       // Validate
+      console.log(this.participant, this.pin)
       if(this.participant == "" || this.participant == null || this.pin == ""){
         alert("Participant field and Pin Field can not be empty")
         return false;
@@ -144,5 +145,16 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+img.welcomeImage {
+  height: 275px;
+  width: 357px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.login h2 {
+  color: #0089d0;
+}
+.login .submitButton button {
+  background-color: #0089d0;
+}
 </style>

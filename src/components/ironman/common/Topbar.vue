@@ -35,7 +35,7 @@
         background: transparent;
     }
 	.logout{
-	    color: #D85C36;
+	    color: #0089d0;
 		font-weight: bold;
 		text-decoration: none;
 
